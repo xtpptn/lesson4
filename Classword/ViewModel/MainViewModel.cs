@@ -12,9 +12,41 @@ namespace Classword.ViewModel
     {
         public MainViewModel()
         {
-            this.Name = "TextBlock ili choto togo";
-            this.Names = new ObservableCollection<string>();
-            Names.Add(Name);
+            this.Name = "What are we going to do tonight, Brain?";
+
+            string filePath = Directory.GetCurrentDirectory();
+            filePath = Directory.GetParent(filePath).Parent.Parent.Parent.FullName;
+            filePath += "\\tasks.csv";
+
+            string[] input;
+
+            try
+            {
+                input = File.ReadAllLines(filePath);
+                this.Names = new ObservableCollection<string>(input);
+            }
+            catch (IOException e)
+            {
+                this.Names = new ObservableCollection<string>();
+                this.Name = "There was an error loading the tasks file";
+                this.Names.Add("Go outside and touch the ground.");
+                
+                string bugReportPath = Directory.GetCurrentDirectory();
+                bugReportPath = Directory.GetParent(bugReportPath).Parent.Parent.Parent.FullName;
+                bugReportPath += "\\bugreport.log";
+
+                List<string> bugreport = new List<string>();
+                bugreport.Add("---Start of Bugreport---");
+                bugreport.Add("\nError:");
+                bugreport.Add(e.ToString());
+                bugreport.Add("\nMessage:");
+                bugreport.Add(e.Message);
+                bugreport.Add("\n---End of Bugreport---");
+                bugreport.Add("");
+
+                File.AppendAllLines(bugReportPath, bugreport);
+            }
+
         }
 
         public string Name { get; set; }
@@ -56,11 +88,11 @@ namespace Classword.ViewModel
         
         public void SaveTasks()
         {
-            string folder = Directory.GetCurrentDirectory();
-            folder = Directory.GetParent(folder).Parent.Parent.Parent.FullName;
-            string filename = "\\tasks.csv";
+            string filePath = Directory.GetCurrentDirectory();
+            filePath = Directory.GetParent(filePath).Parent.Parent.Parent.FullName;
+            filePath += "\\tasks.csv";
 
-            File.WriteAllLines(folder+filename, Names);
+            File.WriteAllLines(filePath, Names);
 
         }
 
